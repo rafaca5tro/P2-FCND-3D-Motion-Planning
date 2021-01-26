@@ -47,21 +47,19 @@ def create_grid(data, drone_altitude, safety_distance):
 
     return grid, int(north_min), int(east_min)
 
-
-# Assume all actions cost the same.
 class Action(Enum):
     """
-    An action is represented by a 3 element tuple.
-
-    The first 2 values are the delta of the action relative
-    to the current grid position. The third and final value
-    is the cost of performing the action.
+    This function provide an action, which represents
+    a 3 elements tuple, where the first 2 values are
+    the deltas in relation to the grid position, and 
+    the 3rd, the cost of performing the action.
     """
-
+    # N/S/W/E
     WEST = (0, -1, 1)
     EAST = (0, 1, 1)
     NORTH = (-1, 0, 1)
     SOUTH = (1, 0, 1)
+    # NW/NE/SW/SE
     NORTH_WEST = (-1, -1, np.sqrt(2))
     NORTH_EAST = (-1, 1, np.sqrt(2))
     SOUTH_WEST = (1, -1, np.sqrt(2))
@@ -78,7 +76,8 @@ class Action(Enum):
 
 def valid_actions(grid, current_node):
     """
-    Returns a list of valid actions given a grid and current node.
+    This function returns a list of valid actions 
+    given a grid and current node.
     """
     valid_actions = list(Action)
     n, m = grid.shape[0] - 1, grid.shape[1] - 1
@@ -133,7 +132,6 @@ def a_star(grid, h, start, goal):
             break
         else:
             for action in valid_actions(grid, current_node):
-                # get the tuple representation
                 da = action.delta
                 next_node = (current_node[0] + da[0], current_node[1] + da[1])
                 branch_cost = current_cost + action.cost
@@ -145,7 +143,6 @@ def a_star(grid, h, start, goal):
                     queue.put((queue_cost, next_node))
 
     if found:
-        # retrace steps
         n = goal
         path_cost = branch[n][0]
         path.append(goal)
@@ -193,7 +190,7 @@ def prune_path(path):
 
 def bres_prune(grid, path):
     """
-    Use the Bresenham module to trim uneeded waypoints from path
+    This function implements Bresenham prune
     """
     pruned_path = [p for p in path]
     i = 0
@@ -213,7 +210,7 @@ def bres_prune(grid, path):
 def plot_chart_route(grid, path, start_ne, goal_ne, pruned):
 
     fig = plt.figure()
-    plt.imshow(grid, origin='lower', cmap='Greys')
+    plt.imshow(grid, origin='lower', cmap='spring')
 
     for i in range(len(path) - 1):
         p1 = path[i]
